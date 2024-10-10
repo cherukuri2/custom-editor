@@ -61,6 +61,8 @@ export class AppComponent {
   textContent: string = '';
   maxLength: number = 5000;
 
+  
+
   get remainingCharacters(): number {
     return this.maxLength - this.textContent.length;
   }
@@ -259,5 +261,14 @@ export class AppComponent {
     const target = event.target as HTMLDivElement;
     this.textContent = target.innerHTML;
   }
+
+  // Function to limit the text input
+  limitTextLength(event: KeyboardEvent) {
+    const textContent = (event.target as HTMLElement)?.innerText || '';
+    if (textContent.length >= this.maxLength && event.key !== 'Backspace' && event.key !== 'Delete') {
+      event.preventDefault();  // Prevent input when limit is reached
+    }
+  }
+
 
 }

@@ -31,6 +31,7 @@
       <fa-icon [icon]="faLink"></fa-icon>
     </button>
 
+    
 
     <!-- Text Color and Background Color -->
     <label for="textColor" style="display: inline-flex; align-items: center; margin-right: 5px;">
@@ -118,7 +119,7 @@
 
 
 
-  
+
   <!-- Text area using contenteditable -->
   <div
     id="editor"
@@ -127,6 +128,7 @@
     (click)="saveSelection()"
     (keyup)="saveSelection()"
     (input)="updateTextContent($event)"
+    (keydown)="limitTextLength($event)"
     style="min-height: 200px; border: 1px solid #ccc; padding: 10px; margin: 10px 0;"
   ></div>
 
