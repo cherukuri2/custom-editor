@@ -55,3 +55,22 @@
     margin-left: 5px;
   }
   
+  .button-palette {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px; /* Space between buttons */
+    background-color: #f0f0f0; /* Light grey background for the container */
+    padding: 10px; /* Padding inside the container */
+    border-radius: 4px; /* Rounded corners for the container */
+  }
+  
+  .button-palette button {
+    border: 1px solid #ccc; /* Light grey border for buttons */
+    padding: 5px 10px; /* Padding for buttons */
+    border-radius: 4px; /* Rounded corners for buttons */
+    cursor: pointer; /* Change cursor to pointer */
+  }
+  
+  .button-palette button:hover {
+    background-color: #e0e0e0; /* Slightly darker grey on hover for buttons */
+  }

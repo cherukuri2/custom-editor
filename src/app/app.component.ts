@@ -231,13 +231,26 @@ export class AppComponent {
     document.execCommand('removeFormat', false, '');
   }
 
-  // Insert a link
   insertLink() {
-    const url = prompt('Enter the URL');
+    const selectedText = window.getSelection()?.toString();
+    
+    // Pre-fill the prompt with 'https://'
+    let url = prompt('Enter the URL', 'https://');
+  
     if (url) {
+      // Check if the URL starts with 'http://' or 'https://', and add 'https://' if not
+      if (!url.startsWith('http://') && !url.startsWith('https://')) {
+        url = 'https://' + url;
+      }
+  
       this.restoreSelection();
-      const linkHTML = `<a href="${url}" target="_blank" rel="noopener noreferrer">${url}</a>`;
-      document.execCommand('insertHTML', false, linkHTML);
+  
+      if (selectedText && selectedText.length > 0) {
+        const linkHTML = `<a href="${url}" target="_blank" rel="noopener noreferrer">${selectedText}</a>`;
+        document.execCommand('insertHTML', false, linkHTML);
+      } else {
+        alert('Please select some text to add the link to.');
+      }
     }
   }
 
