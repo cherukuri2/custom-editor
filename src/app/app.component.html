@@ -1,0 +1,138 @@
+<div class="editor-container">
+  <!-- Formatting buttons -->
+  <button (click)="applyCommand('bold')">
+    <fa-icon [icon]="faBold"></fa-icon>
+  </button>
+  <button (click)="applyCommand('italic')">
+    <fa-icon [icon]="faItalic"></fa-icon>
+  </button>
+  <button (click)="strikethrough()">
+    <fa-icon [icon]="faStrikethrough"></fa-icon>
+  </button>
+  <button (click)="subscript()">
+    <fa-icon [icon]="faSubscript"></fa-icon>
+  </button>
+  <button (click)="superscript()">
+    <fa-icon [icon]="faSuperscript"></fa-icon>
+  </button>
+
+  <!-- Clear Formatting -->
+  <button (click)="clearFormatting()">
+    <fa-icon [icon]="faEraser"></fa-icon>
+  </button>
+
+  <!-- Insert Link -->
+  <button (click)="insertLink()">
+    <fa-icon [icon]="faLink"></fa-icon>
+  </button>
+
+  <!-- Text Color and Background Color -->
+  <label for="textColor" style="display: inline-flex; align-items: center; margin-right: 5px;">
+    <fa-icon [icon]="faTextColor"></fa-icon>
+    <input type="color" id="textColor" (input)="applyTextColor($event)" style="margin-left: 5px;"/>
+  </label>
+
+  <label for="backgroundColor" style="display: inline-flex; align-items: center; margin-right: 5px;">
+    <fa-icon [icon]="faBgColor"></fa-icon>
+    <input type="color" id="backgroundColor" (input)="applyBackgroundColor($event)" style="margin-left: 5px;"/>
+  </label>
+
+  <!-- Cut, Copy, Paste -->
+  <button (click)="applyCommand('cut')">
+    <fa-icon [icon]="faCut"></fa-icon>
+  </button>
+  <button (click)="applyCommand('copy')">
+    <fa-icon [icon]="faCopy"></fa-icon>
+  </button>
+  <button (click)="applyCommand('paste')">
+    <fa-icon [icon]="faPaste"></fa-icon>
+  </button>
+
+  <!-- Undo and Redo -->
+  <button (click)="undo()">
+    <fa-icon [icon]="faUndo"></fa-icon>
+  </button>
+  <button (click)="redo()">
+    <fa-icon [icon]="faRedo"></fa-icon>
+  </button>
+
+  <!-- Indentation and Alignment -->
+  <button (click)="indent()">
+    <fa-icon [icon]="faIndent"></fa-icon>
+  </button>
+  <button (click)="outdent()">
+    <fa-icon [icon]="faOutdent"></fa-icon>
+  </button>
+  <button (click)="alignLeft()">
+    <fa-icon [icon]="faAlignLeft"></fa-icon>
+  </button>
+  <button (click)="alignCenter()">
+    <fa-icon [icon]="faAlignCenter"></fa-icon>
+  </button>
+  <button (click)="alignRight()">
+    <fa-icon [icon]="faAlignRight"></fa-icon>
+  </button>
+  <button (click)="justify()">
+    <fa-icon [icon]="faAlignJustify"></fa-icon>
+  </button>
+
+  <!-- Font Size Selection -->
+  <select (change)="changeFontSize($event)">
+    <option value="">Font Size</option>
+    <option value="10px">Small</option>
+    <option value="16px">Normal</option>
+    <option value="20px">Large</option>
+    <option value="24px">Extra Large</option>
+  </select>
+
+  <!-- Font Family Selection -->
+  <select (change)="changeFontFamily($event)">
+    <option value="">Font Family</option>
+    <option value="Arial">Arial</option>
+    <option value="Courier New">Courier New</option>
+    <option value="Georgia">Georgia</option>
+    <option value="Times New Roman">Times New Roman</option>
+    <option value="Verdana">Verdana</option>
+  </select>
+
+  <!-- Insert Symbols -->
+  <button (click)="insertSymbol('©')">©</button>
+  <button (click)="insertSymbol('®')">®</button>
+  <button (click)="insertSymbol('™')">™</button>
+  <button (click)="insertSymbol('•')">•</button>
+
+  <!-- Ordered and Unordered List -->
+  <button (click)="insertOrderedList()">
+    <fa-icon [icon]="faListOl"></fa-icon>
+  </button>
+  <button (click)="insertUnorderedList()">
+    <fa-icon [icon]="faListUl"></fa-icon>
+  </button>
+
+  <!-- Text area using contenteditable -->
+  <div
+    id="editor"
+    class="custom-editor"
+    contenteditable="true"
+    (click)="saveSelection()"
+    (keyup)="saveSelection()"
+    (input)="updateTextContent($event)"
+    style="min-height: 200px; border: 1px solid #ccc; padding: 10px; margin: 10px 0;"
+  ></div>
+
+  <!-- Remaining characters -->
+  <div>
+    Remaining characters: {{ remainingCharacters }} / {{ maxLength }}
+  </div>
+
+  <!-- Display HTML Markup -->
+  <div>
+    <strong>Markup:</strong>
+    <div [innerHTML]="textContent" style="border: 1px solid #ccc; padding: 10px; margin-top: 10px;"></div>
+  </div>
+
+  <div>
+    <strong>HTML Markup:</strong>
+    <div style="border: 1px solid #ccc; padding: 10px; margin-top: 10px;">{{textContent}}</div>
+  </div>
+</div>
