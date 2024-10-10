@@ -270,5 +270,19 @@ export class AppComponent {
     }
   }
 
+  // Handle paste event to restrict pasted content
+  onPaste(event: ClipboardEvent) {
+    event.preventDefault();  // Prevent the default paste action
+    const clipboardData = event.clipboardData?.getData('text') || '';  // Get plain text from clipboard
+    const textContent = (event.target as HTMLElement)?.innerText || '';  // Get the existing text in the div
+
+    // Determine how many characters are allowed to be pasted
+    const charsLeft = this.maxLength - textContent.length;
+    if (charsLeft > 0) {
+      const textToPaste = clipboardData.substring(0, charsLeft);  // Truncate the pasted text if necessary
+      document.execCommand('insertText', false, textToPaste);  // Insert the allowed portion of text
+    }
+  }
+
 
 }
