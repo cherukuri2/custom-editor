@@ -101,7 +101,7 @@ export class AppComponent {
         id: Date.now(), // Use timestamp as unique ID
         content: this.textContent // Save HTML content
       };
-      console.log('Saving content: ' + newContent.content);
+      console.log('Saving content: ' + JSON.stringify(newContent));
       this.savedContents.push(newContent);
     }
     this.updateLocalStorage(); // Update localStorage
@@ -139,8 +139,6 @@ export class AppComponent {
 
   // Reset the editor after saving or canceling
   resetEditor() {
-    console.log('Resetting editor');
-    this.textContent = '';
     this.content = ''; // Clear the editor content
     this.editMode = false; // Reset the edit mode
     this.editingId = null; // Reset the editing ID
