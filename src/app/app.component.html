@@ -176,7 +176,8 @@
     <h3>Saved Contents</h3>
     <div *ngFor="let item of savedContents" class="saved-item">
       
-      <div [innerHTML]="getTruncatedContent(item.content)"></div> <!-- Display formatted HTML content -->
+      <div [innerHTML]="item.content"></div> <!-- Bind directly to item.content -->
+
       <div class="content-actions">
         <button (click)="editContent(item.id)">Edit</button>
         <button (click)="deleteContent(item.id)">Delete</button>

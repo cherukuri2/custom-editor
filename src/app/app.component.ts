@@ -29,6 +29,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 
 import { library } from '@fortawesome/fontawesome-svg-core';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 
 
 @Component({
@@ -70,10 +71,11 @@ export class AppComponent {
   maxLength: number = 5000;
 
   content: string = ''; // Stores editor content
-  savedContents: Array<{ id: number, content: string }> = []; // Stores saved content with IDs
+  savedContents: Array<{ id: number, content: SafeHtml }> = []; // Use SafeHtml type
   editMode: boolean = false; // Toggles between edit and add mode
   editingId: number | null = null; // Holds the ID of the item being edited
   isExpanded: boolean = false; // Track expand/collapse state
+  
   
   symbolPaletteVisible = false;
 
@@ -81,7 +83,7 @@ export class AppComponent {
   symbols: string[] = ['©', '®', '™', '±', '√', '∞', 'Ω', 'π', 'µ'];
 
   
-  constructor() {
+  constructor(private sanitizer: DomSanitizer) {
     this.loadSavedContents(); // Load saved contents on component initialization
   }
 
@@ -91,7 +93,7 @@ export class AppComponent {
       // Edit mode: Update the existing content
       this.savedContents = this.savedContents.map(item => {
         if (item.id === this.editingId) {
-          return { id: item.id, content: this.textContent };
+          return { id: item.id, content: this.sanitizeContent(this.textContent) };
         }
         return item;
       });
@@ -99,7 +101,7 @@ export class AppComponent {
       // Add mode: Save new content
       const newContent = {
         id: Date.now(), // Use timestamp as unique ID
-        content: this.textContent // Save HTML content
+        content: this.sanitizeContent(this.textContent) // Save HTML content
       };
       console.log('Saving content: ' + JSON.stringify(newContent));
       this.savedContents.push(newContent);
@@ -108,11 +110,16 @@ export class AppComponent {
     this.resetEditor(); // Clear the editor
   }
 
+  // Sanitize the HTML content
+  sanitizeContent(content: string): SafeHtml {
+    return this.sanitizer.bypassSecurityTrustHtml(content);
+  }
+
   // Edit a specific saved row
   editContent(id: number) {
     const itemToEdit = this.savedContents.find(item => item.id === id);
     if (itemToEdit) {
-      this.content = itemToEdit.content; // Load the saved HTML content back into the editor
+      this.content = itemToEdit.content as string; // Load the saved HTML content back into the editor
       this.editMode = true; // Switch to edit mode
       this.editingId = id; // Set the editing ID
     }
@@ -145,9 +152,15 @@ export class AppComponent {
   }
 
   // Function to get the truncated content for display
-  getTruncatedContent(content: string): string {
-    return content.length > 50 ? content.substring(0, 50) + '...' : content;
+  getTruncatedContent(content: SafeHtml): string {
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = content as string; // Cast SafeHtml to string
+    const textContent = tempDiv.textContent || tempDiv.innerText || ''; // Get the plain text
+  
+    // Return the first 50 characters or full content if less than 50 characters
+    return textContent.length > 50 ? textContent.substring(0, 50) + '...' : textContent;
   }
+  
 
   get remainingCharacters(): number {
     return this.maxLength - this.textContent.length;
