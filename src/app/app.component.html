@@ -105,11 +105,13 @@
       <option value="Verdana">Verdana</option>
     </select>
 
-    <!-- Insert Symbols -->
-    <button (click)="insertSymbol('©')">©</button>
-    <button (click)="insertSymbol('®')">®</button>
-    <button (click)="insertSymbol('™')">™</button>
-    <button (click)="insertSymbol('•')">•</button>
+    
+
+  <!-- Symbols Dropdown -->
+  <select (change)="insertSymbol($event)">
+    <option value="" disabled selected hidden>Symbol</option>
+    <option *ngFor="let symbol of symbols" [value]="symbol">{{ symbol }}</option>
+  </select>
 
     <!-- Ordered and Unordered List -->
     <button (click)="insertOrderedList()">

@@ -74,8 +74,13 @@ export class AppComponent {
   editMode: boolean = false; // Toggles between edit and add mode
   editingId: number | null = null; // Holds the ID of the item being edited
   isExpanded: boolean = false; // Track expand/collapse state
+  
+  symbolPaletteVisible = false;
 
+  // List of symbols
+  symbols: string[] = ['©', '®', '™', '±', '√', '∞', 'Ω', 'π', 'µ'];
 
+  
   constructor() {
     this.loadSavedContents(); // Load saved contents on component initialization
   }
@@ -310,9 +315,11 @@ export class AppComponent {
   }
 
   // Insert symbols
-  insertSymbol(symbol: string) {
+  insertSymbol(event: Event) {
+    const target = event.target as HTMLSelectElement; // Assert as HTMLSelectElement
+    const symbolType = target.value;
     this.restoreSelection();
-    document.execCommand('insertText', false, symbol);
+    document.execCommand('insertText', false, symbolType);
   }
 
   // Clear all formatting
