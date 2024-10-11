@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { 
   faBold, 
   faItalic, 
+  faUnderline,
   faFillDrip, 
   faTint, 
   faCut, 
@@ -22,8 +23,13 @@ import {
   faSubscript, 
   faFont , 
   faLink, // Importing the link icon
-  faEraser // Importing an eraser icon
+  faEraser, // Importing an eraser icon
+  faChevronDown, 
+  faChevronUp
 } from '@fortawesome/free-solid-svg-icons';
+
+import { library } from '@fortawesome/fontawesome-svg-core';
+
 
 @Component({
   selector: 'app-root',
@@ -32,6 +38,7 @@ import {
 })
 export class AppComponent {
   faBold = faBold;
+  faUnderline = faUnderline;
   faItalic = faItalic;
   faTextColor = faTint; 
   faBgColor = faFillDrip; 
@@ -53,15 +60,91 @@ export class AppComponent {
   faSubscript = faSubscript; 
   faFont = faFont; 
   faLink = faLink; // Assigning the link icon
-
   faEraser = faEraser; // Assigning the eraser icon
+  faChevronDown = faChevronDown;
+  faChevronUp = faChevronUp;
 
   private savedRange: Range | null = null;
 
   textContent: string = '';
   maxLength: number = 5000;
 
-  
+  content: string = ''; // Stores editor content
+  savedContents: Array<{ id: number, content: string }> = []; // Stores saved content with IDs
+  editMode: boolean = false; // Toggles between edit and add mode
+  editingId: number | null = null; // Holds the ID of the item being edited
+  isExpanded: boolean = false; // Track expand/collapse state
+
+
+  constructor() {
+    this.loadSavedContents(); // Load saved contents on component initialization
+  }
+
+  // Save editor content to localStorage
+  saveContent() {
+    if (this.editMode && this.editingId !== null) {
+      // Edit mode: Update the existing content
+      this.savedContents = this.savedContents.map(item => {
+        if (item.id === this.editingId) {
+          return { id: item.id, content: this.textContent };
+        }
+        return item;
+      });
+    } else {
+      // Add mode: Save new content
+      const newContent = {
+        id: Date.now(), // Use timestamp as unique ID
+        content: this.textContent // Save HTML content
+      };
+      console.log('Saving content: ' + newContent.content);
+      this.savedContents.push(newContent);
+    }
+    this.updateLocalStorage(); // Update localStorage
+    this.resetEditor(); // Clear the editor
+  }
+
+  // Edit a specific saved row
+  editContent(id: number) {
+    const itemToEdit = this.savedContents.find(item => item.id === id);
+    if (itemToEdit) {
+      this.content = itemToEdit.content; // Load the saved HTML content back into the editor
+      this.editMode = true; // Switch to edit mode
+      this.editingId = id; // Set the editing ID
+    }
+  }
+
+  // Load saved contents from localStorage
+  loadSavedContents() {
+    const data = localStorage.getItem('savedContents');
+    if (data) {
+      this.savedContents = JSON.parse(data);
+    }
+  }
+
+  // Update localStorage with the current saved contents
+  updateLocalStorage() {
+    localStorage.setItem('savedContents', JSON.stringify(this.savedContents));
+  }
+
+  // Delete a specific saved row
+  deleteContent(id: number) {
+    this.savedContents = this.savedContents.filter(item => item.id !== id);
+    this.updateLocalStorage(); // Update localStorage after deletion
+  }
+
+  // Reset the editor after saving or canceling
+  resetEditor() {
+    console.log('Resetting editor');
+    this.textContent = '';
+    this.content = ''; // Clear the editor content
+    this.editMode = false; // Reset the edit mode
+    this.editingId = null; // Reset the editing ID
+  }
+
+  // Function to get the truncated content for display
+  getTruncatedContent(content: string): string {
+    return content.length > 50 ? content.substring(0, 50) + '...' : content;
+  }
 
   get remainingCharacters(): number {
     return this.maxLength - this.textContent.length;
@@ -82,6 +165,11 @@ export class AppComponent {
       selection.removeAllRanges();
       selection.addRange(this.savedRange);
     }
+  }
+
+  // Toggle the expand/collapse state
+  toggleExpandCollapse() {
+    this.isExpanded = !this.isExpanded;
   }
 
   // Apply commands like bold, italic, etc.
