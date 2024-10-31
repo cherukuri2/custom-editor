@@ -22,7 +22,12 @@
       <fa-icon [icon]="faSuperscript"></fa-icon>
     </button>
 
-
+    <button (click)="copyFormat()" title="Copy Format">
+      <fa-icon [icon]="faPaintBrush"></fa-icon> <!-- Font Awesome Paint Brush -->
+    </button>
+    <button (click)="applyFormat()" title="Apply Format">
+      <fa-icon [icon]="faPaintRoller"></fa-icon> <!-- Font Awesome Paint Roller -->
+    </button>
 
     <!-- Clear Formatting -->
     <button (click)="clearFormatting()">
@@ -127,17 +132,35 @@
 
   <!-- Text area using contenteditable -->
   <div
-  dir="ltr"
+
     #editorContent
     id="editor"
     class="html-editor"
     contenteditable="true"
+    (click)="saveSelection()"
+    (keyup)="saveSelection()"
+    (input)="onInput()"
+    (keydown)="limitTextLength($event)"
+    (paste)="onPaste($event)"
 
 
 
-    [innerHTML]="sanitizeHtml(content)"
     style="min-height: 200px; border: 1px solid #ccc; padding: 10px; margin: 10px 0;"
   ></div>
 
+  <div class="editor-wrapper">
+    <h3>Kendo Editor Integration</h3>
+
+    <kendo-editor [(ngModel)]="kendoContent" ></kendo-editor>
+
+    <button (click)="saveKendoContent()">Save</button>
+
+    <h4>Saved Content Preview:</h4>
+    <div [innerHTML]="content"></div>
+  </div>
+-->
+
+  <!--
+    [innerHTML]="sanitizeHtml(content)"
 
 </div>

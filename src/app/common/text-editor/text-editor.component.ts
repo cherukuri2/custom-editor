@@ -1,4 +1,4 @@
-import { Component, ElementRef, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges, ViewChild } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, OnChanges, OnInit, Output, Renderer2, SimpleChanges, ViewChild } from '@angular/core';
 
 import {
   faBold,
@@ -26,7 +26,10 @@ import {
   faLink, // Importing the link icon
   faEraser, // Importing an eraser icon
   faChevronDown,
-  faChevronUp
+  faChevronUp,
+  faPaintBrush,
+  faPaintRoller
+
 } from '@fortawesome/free-solid-svg-icons';
 
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
@@ -66,8 +69,11 @@ export class TextEditorComponent implements OnInit, OnChanges  {
   faEraser = faEraser; // Assigning the eraser icon
   faChevronDown = faChevronDown;
   faChevronUp = faChevronUp;
+  faPaintBrush = faPaintBrush;  // Font Awesome Icons
+  faPaintRoller = faPaintRoller;
 
   private savedRange: Range | null = null;
+  copiedStyle: { [key: string]: string } = {};  // Store copied formatting
 
   textContent: string = '';
   maxLength: number = 5000;
@@ -86,12 +92,23 @@ export class TextEditorComponent implements OnInit, OnChanges  {
   // isExpanded: boolean = false; // Track expand/collapse state
 
 
+
+  public kendoContent: string = '<p>Type your content here!</p>';
+  // Function to handle form submission or saving content
+  public saveKendoContent(): void {
+    console.log('Saved content:', this.kendoContent);
+  }
+
+
+
   symbolPaletteVisible = false;
 
   // List of symbols
   symbols: string[] = ['©', '®', '™', '±', '√', '∞', 'Ω', 'π', 'µ'];
 
-  constructor(private sanitizer: DomSanitizer) {
+  constructor(private renderer: Renderer2, private sanitizer: DomSanitizer) {
+  // Set the innerHTML of the contenteditable div directly with the plain HTML string
+  this.renderer.setProperty(this.editorContent?.nativeElement, 'innerHTML', this.content);
 
   }
 
@@ -115,11 +132,11 @@ export class TextEditorComponent implements OnInit, OnChanges  {
 
   // Restore the saved caret position (selection range)
   restoreSelection() {
-    // const selection = window.getSelection();
-    // if (selection && this.savedRange) {
-    //   selection.removeAllRanges();
-    //   selection.addRange(this.savedRange);
-    // }
+    const selection = window.getSelection();
+    if (selection && this.savedRange) {
+      selection.removeAllRanges();
+      selection.addRange(this.savedRange);
+    }
   }
 
 
@@ -169,18 +186,32 @@ export class TextEditorComponent implements OnInit, OnChanges  {
 
   // Change the font size
   changeFontSize(event: Event) {
-    const target = event.target as HTMLSelectElement; // Assert as HTMLSelectElement
+    const target = event.target as HTMLSelectElement;
     const size = target.value;
     if (!size) return; // If no size is selected, do nothing
-    this.restoreSelection();
-    document.execCommand('fontSize', false, '7'); // '7' is the largest size
+
+    // Save the current selection
+    const selection = window.getSelection();
+    if (!selection || selection.rangeCount === 0) return;
+
+    // Use execCommand to wrap the selected text in a <font> tag with size '7'
+    document.execCommand('fontSize', false, '7');
+
+    // Find the most recent <font> element added
     const fontElements = document.getElementsByTagName('font');
-    for (let i = 0; i < fontElements.length; i++) {
-      fontElements[i].removeAttribute('size');
-      fontElements[i].style.fontSize = size; // Set custom size
+    for (let i = fontElements.length - 1; i >= 0; i--) {
+        const fontElement = fontElements[i];
+        // Check if the font element is within the current selection
+        if (selection.containsNode(fontElement, true)) {
+            fontElement.removeAttribute('size'); // Remove the default size attribute
+            fontElement.style.fontSize = size; // Apply the selected font size
+            break; // Stop once we handle the first match in reverse order
+        }
     }
+
     this.onInput();
-  }
+}
+
 
   // Change the heading
   changeHeading(event: Event) {
@@ -358,6 +389,40 @@ export class TextEditorComponent implements OnInit, OnChanges  {
   // Function to sanitize HTML before rendering
   sanitizeHtml(html: string): SafeHtml {
     return this.sanitizer.bypassSecurityTrustHtml(html);
+  }
+
+  // Copy format from selected text
+  copyFormat() {
+    const selection = window.getSelection();
+    if (!selection || selection.rangeCount === 0) return;
+
+    const selectedNode = selection.anchorNode?.parentElement;
+    if (selectedNode) {
+      const computedStyle = window.getComputedStyle(selectedNode);
+      // Store relevant styles (add more styles if needed)
+      this.copiedStyle = {
+        fontWeight: computedStyle.fontWeight,
+        fontStyle: computedStyle.fontStyle,
+        textDecoration: computedStyle.textDecoration,
+        fontSize: computedStyle.fontSize,
+        color: computedStyle.color,
+        backgroundColor: computedStyle.backgroundColor,
+      };
+    }
+  }
+
+  // Apply format to the selected text
+  applyFormat() {
+    const selection = window.getSelection();
+    if (!selection || selection.rangeCount === 0) return;
+
+    const selectedNode = selection.anchorNode?.parentElement;
+    if (selectedNode) {
+      // Apply the copied styles
+      Object.keys(this.copiedStyle).forEach(property => {
+        selectedNode.style[property  as any] = this.copiedStyle[property];
+      });
+    }
   }
 
 }
