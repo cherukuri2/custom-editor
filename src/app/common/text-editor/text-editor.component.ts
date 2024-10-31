@@ -75,6 +75,10 @@ export class TextEditorComponent implements OnInit, OnChanges  {
   private savedRange: Range | null = null;
   copiedStyle: { [key: string]: string } = {};  // Store copied formatting
 
+  colors = ['#ff0000', '#00ff00', '#0000ff', '#ffa500', '#800080', '#000000', '#ff8080']; // Add any colors you want
+  backgroundColors = ['#ffff00', '#ffcccc', '#ccffcc', '#ccccff', '#f0e68c', '#add8e6', '#d3d3d3']; // Define your colors here
+
+
   textContent: string = '';
   maxLength: number = 5000;
 
@@ -409,6 +413,38 @@ export class TextEditorComponent implements OnInit, OnChanges  {
         backgroundColor: computedStyle.backgroundColor,
       };
     }
+  }
+
+  changeTextColor(event: Event) {
+    const target = event.target as HTMLSelectElement;
+    const color = target.value;
+    if (!color) return;
+
+    // Ensure that the current selection is within the editor
+    const selection = window.getSelection();
+    if (!selection || selection.rangeCount === 0) return;
+
+    // Apply the selected color
+    document.execCommand('foreColor', false, color);
+
+    // Reset dropdown to default (optional)
+    target.value = '';
+  }
+
+  changeBackgroundColor(event: Event) {
+    const target = event.target as HTMLSelectElement;
+    const color = target.value;
+    if (!color) return;
+
+    // Ensure that the current selection is within the editor
+    const selection = window.getSelection();
+    if (!selection || selection.rangeCount === 0) return;
+
+    // Apply the selected background color
+    document.execCommand('backColor', false, color);
+
+    // Reset dropdown to default (optional)
+    target.value = '';
   }
 
   // Apply format to the selected text

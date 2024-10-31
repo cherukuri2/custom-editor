@@ -120,3 +120,17 @@ input[type="color"], select {
 .editor-actions button:hover {
   background-color: #f0f0f0;
 }
+
+.color-dropdown {
+  width: 120px;
+  height: 40px;
+  border: 1px solid #ddd;
+  appearance: none; /* Remove default dropdown styling in some browsers */
+}
+
+.color-dropdown option {
+  height: 25px;
+  color: transparent; /* Hide text color */
+  border: none;
+  padding: 5px;
+}
