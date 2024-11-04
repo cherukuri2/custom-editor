@@ -91,6 +91,19 @@
       <fa-icon [icon]="faAlignJustify"></fa-icon>
     </button>
 
+      <!-- Dropdown for color selection -->
+      <select (change)="changeTextColor($event)" >
+        <option value="">Text Color</option>
+        <option *ngFor="let color of colors" [value]="color" [style.background]="color">
+          </option>
+      </select>
+
+      <select (change)="changeBackgroundColor($event)" >
+        <option value="">Background Color</option>
+        <option *ngFor="let color of backgroundColors" [value]="color" [style.background]="color">
+        </option>
+    </select>
+
     <!-- Font Size Selection -->
     <select (change)="changeFontSize($event)">
       <option value="">Font Size</option>
@@ -148,6 +161,7 @@
     style="min-height: 200px; border: 1px solid #ccc; padding: 10px; margin: 10px 0;"
   ></div>
 
+  <!--
   <div class="editor-wrapper">
     <h3>Kendo Editor Integration</h3>
 
@@ -162,5 +176,6 @@
 
   <!--
     [innerHTML]="sanitizeHtml(content)"
+   -->
 
 </div>
